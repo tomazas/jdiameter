@@ -24,6 +24,7 @@ package org.jdiameter.api.ro;
 
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
+import org.jdiameter.api.Message;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.app.AppAnswerEvent;
@@ -79,6 +80,19 @@ public interface ClientRoSessionListener {
    * @throws OverloadException The OverloadException signals that destination host is overloaded.
    */
   void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
+
+  /**
+   * Notifies this ClientRoSessionListener that the ClientRoSession failed sending message.
+   * 
+   * @param session parent application session (FSM)
+   * @param error the exception raised
+   * @param request request object
+   * @throws InternalException The InternalException signals that internal error has occurred.
+   * @throws IllegalDiameterStateException The IllegalStateException signals that session has incorrect state (invalid).
+   * @throws RouteException The NoRouteException signals that no route exist for a given realm.
+   * @throws OverloadException The OverloadException signals that destination host is overloaded.
+   */
+   void doSendError(ClientRoSession session, Exception error, Message request) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException;
 
   /**
    * Provides with default value of DDFH AVP - this is used when AVP is not present or send

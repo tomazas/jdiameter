@@ -26,9 +26,12 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.jdiameter.api.Answer;
 import org.jdiameter.api.ApplicationId;
+import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
 import org.jdiameter.api.Message;
+import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.app.AppAnswerEvent;
 import org.jdiameter.api.app.AppRequestEvent;
@@ -350,6 +353,10 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   public void doOtherEvent(AppSession session, AppRequestEvent request, AppAnswerEvent answer) throws InternalException {
 
   }
+  
+  public void doSendError(ClientRoSession session, Exception error, Message request) throws InternalException {
+  	
+  }
 
   // Message Factory Methods --------------------------------------------------
 
@@ -373,7 +380,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
 
   @SuppressWarnings("unchecked")
   public void stateChanged(Enum oldState, Enum newState) {
-    logger.info("Diameter Ro SessionFactory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
+    logger.debug("Diameter Ro SessionFactory :: stateChanged :: oldState[{}], newState[{}]", oldState, newState);
   }
 
   /*
@@ -383,12 +390,13 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
    */
   @SuppressWarnings("unchecked")
   public void stateChanged(AppSession source, Enum oldState, Enum newState) {
-    logger.info("Diameter Ro SessionFactory :: stateChanged :: source[{}], oldState[{}], newState[{}]", new Object[]{source, oldState, newState});
+    logger.debug("Diameter Ro SessionFactory :: stateChanged :: source[{}], oldState[{}], newState[{}]", new Object[]{source, oldState, newState});
   }
 
   // FIXME: add ctx methods proxy calls!
 
   public void sessionSupervisionTimerExpired(ServerRoSession session) {
+	logger.debug("Diameter Ro SessionFactory:: supervision timer expired, session = {}", session);
     // this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
     session.release();
   }
@@ -408,6 +416,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
     // TODO Complete this method.
   }
 
+  // timeoutExpired from IServerRoSessionContext
   public void timeoutExpired(Request request) {
     // FIXME What should we do when there's a timeout?
   }
@@ -421,6 +430,7 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
   }
 
   public void denyAccessOnTxExpire(ClientRoSession clientRoSessionImpl) {
+	logger.debug("Diameter Ro SessionFactory:: deny access timer expired, session = {}", clientRoSessionImpl);
     // this.resourceAdaptor.sessionDestroyed(clientRoSessionImpl.getSessions().get(0).getSessionId(),
     // clientRoSessionImpl);
     clientRoSessionImpl.release();
@@ -454,7 +464,9 @@ public class RoSessionFactoryImpl implements IRoSessionFactory, ClientRoSessionL
     // TODO Auto-generated method stub
   }
 
+  // from IClientRoSessionContext
   public void txTimerExpired(ClientRoSession session) {
+	logger.debug("Diameter Ro SessionFactory:: transaction timer expired, session = {}", session);
     // this.resourceAdaptor.sessionDestroyed(session.getSessions().get(0).getSessionId(), session);
     session.release();
   }

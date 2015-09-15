@@ -28,3 +28,4 @@ target
 Icon?
 ehthumbs.db
 Thumbs.db
+/core/mux/sar-jboss-5/${env.JBOSS_HOME}/server/default/deploy/mobicents-diameter-mux-1.7.0-SNAPSHOT.sar/lib/*.jar

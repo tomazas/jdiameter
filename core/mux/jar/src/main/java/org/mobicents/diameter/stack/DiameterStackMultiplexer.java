@@ -33,6 +33,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -60,6 +62,7 @@ import org.jdiameter.api.Request;
 import org.jdiameter.api.ResultCode;
 import org.jdiameter.api.Session;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.app.ConnectionStateListener;
 import org.jdiameter.client.api.controller.IRealm;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.client.impl.DictionarySingleton;
@@ -94,6 +97,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   protected ReentrantLock lock = new ReentrantLock();
 
   protected DiameterProvider provider;
+  
+  protected ConcurrentLinkedQueue<ConnectionStateListener> listeners;
 
   // ===== STACK MANAGEMENT =====
 
@@ -535,6 +540,8 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
 
   final Pattern IP_PATTERN = Pattern.compile("\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b");
 
+private ConnectionStateListener listener;
+
   public void _LocalPeer_addIPAddress(String ipAddress) throws MBeanException {
     // validate ip address
     if(IP_PATTERN.matcher(ipAddress).matches()) {
@@ -884,5 +891,21 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
     }
   }
 
+  @Override
+  public void registerConnectionStateListener(ConnectionStateListener listener) {
+	  if(logger.isInfoEnabled()) {
+	      logger.info("Diameter Stack Mux :: registerConnectionStateListener :: Listener [" + listener + "]");
+	  }
 
+	  this.stack.registerConnectionStateListener(listener);
+  }
+  
+  @Override
+  public void unregisterConnectionStateListener(ConnectionStateListener listener) {
+	  if(logger.isInfoEnabled()) {
+	      logger.info("Diameter Stack Mux :: unregisterConnectionStateListener :: Listener [" + listener + "]");
+	  }
+
+	  this.stack.unregisterConnectionStateListener(listener);
+  }
 }

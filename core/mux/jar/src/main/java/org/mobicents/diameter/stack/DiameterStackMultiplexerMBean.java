@@ -30,6 +30,7 @@ import javax.management.MBeanException;
 import org.jboss.system.ServiceMBean;
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.app.ConnectionStateListener;
 import org.mobicents.diameter.api.DiameterMessageFactory;
 import org.mobicents.diameter.api.DiameterProvider;
 import org.mobicents.diameter.stack.management.DiameterConfiguration;
@@ -46,6 +47,10 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean {
   public void registerListener(DiameterListener listener, ApplicationId[] appIds) throws IllegalStateException;
 
   public void unregisterListener(DiameterListener listener);
+  
+  public void registerConnectionStateListener(ConnectionStateListener listener);
+  
+  public void unregisterConnectionStateListener(ConnectionStateListener listener);
 
   //For sake of simplicity in the pre Gamma :)
   public Stack getStack();

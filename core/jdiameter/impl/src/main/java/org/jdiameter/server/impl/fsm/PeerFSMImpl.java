@@ -94,7 +94,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     }
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DWR", e);
+                    logger.error("Can not send DWR", e);
                     doDisconnect();
                     doEndConnection();
                   }
@@ -112,7 +112,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     switchToNextState(STOPPING);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DPR", e);
+                    logger.error("Can not send DPR", e);
                     doDisconnect();
                     switchToNextState(DOWN);
                   }
@@ -135,7 +135,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     context.sendCeaMessage(ResultCode.UNABLE_TO_COMPLY, message(event), "Unable to receive CER in OPEN state.");
                   }
                   catch (Exception e) {
-                    logger.debug("Failed to send CEA.", e);
+                    logger.error("Failed to send CEA.", e);
                     doDisconnect();  // !
                     doEndConnection();
                   }
@@ -146,7 +146,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     context.sendDpaMessage(message(event), code, null);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DPA", e);
+                    logger.error("Can not send DPA", e);
                   }
                   IMessage message = (IMessage) event.getData();
                   try {
@@ -174,7 +174,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     context.sendDwaMessage(message(event), ResultCode.SUCCESS, null);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DWA, reconnecting", e);
+                    logger.error("Can not send DWA, reconnecting", e);
                     doDisconnect();
                     doEndConnection();
                   }
@@ -188,13 +188,13 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     context.sendMessage(message(event));
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send message", e);
+                    logger.error("Can not send message", e);
                     doDisconnect();
                     doEndConnection();
                   }
                   break;
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);
+                  logger.error("Unknown event type {} in state {}", type(event), state);
                   return false;
               }
               return true;
@@ -224,7 +224,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     switchToNextState(STOPPING);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DPR", e);
+                    logger.error("Can not send DPR", e);
                     doDisconnect();
                     switchToNextState(DOWN);
                   }
@@ -241,7 +241,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     context.sendDpaMessage(message(event), code, null);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DPA", e);
+                    logger.error("Can not send DPA", e);
                   }
                   IMessage message = (IMessage) event.getData();
                   try {
@@ -268,7 +268,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     switchToNextState(OKAY);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DWA", e);
+                    logger.error("Can not send DWA", e);
                     doDisconnect();
                     switchToNextState(DOWN);
                   }
@@ -281,7 +281,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 case SEND_MSG_EVENT: // todo buffering
                   throw new IllegalStateException("Connection is down");
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);
+                  logger.error("Unknown event type {} in state {}", type(event), state);
                   return false;
               }
               return true;
@@ -314,7 +314,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     switchToNextState(INITIAL);
                   }
                   catch (Throwable e) {
-                    logger.debug("Connect error", e);
+                    logger.error("Connect error", e);
                     doEndConnection();
                   }
                   break;
@@ -327,7 +327,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                       switchToNextState(OKAY);
                     }
                     catch (Exception e) {
-                      logger.debug("Failed to send CEA.", e);
+                      logger.error("Failed to send CEA.", e);
                       doDisconnect();  // !
                       doEndConnection();
                     }
@@ -337,7 +337,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                       context.sendCeaMessage(resultCode, message(event),  null);
                     }
                     catch (Exception e) {
-                      logger.debug("Failed to send CEA.", e);
+                      logger.error("Failed to send CEA.", e);
                     }
                     doDisconnect(); // !
                     doEndConnection();
@@ -352,7 +352,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   // those are ~legal, ie. DISCONNECT_EVENT is sent back from connection
                   break;
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.error("Unknown event type {} in state {}", type(event), state);                          
                   return false;
               }
               return true;
@@ -369,7 +369,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     switchToNextState(INITIAL);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send CER", e);
+                    logger.error("Can not send CER", e);
                     setTimer(REC_TIMEOUT);
                   }
                   break;
@@ -378,7 +378,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                     context.connect();
                   }
                   catch (Exception e) {
-                    logger.debug("Can not connect to remote peer", e);
+                    logger.error("Can not connect to remote peer", e);
                     setTimer(REC_TIMEOUT);
                   }
                   break;
@@ -393,7 +393,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   // todo buffering
                   throw new IllegalStateException("Connection is down");
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.error("Unknown event type {} in state {}", type(event), state);                          
                   return false;
               }
               return true;
@@ -438,7 +438,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                       switchToNextState(OKAY); // if other connection is win
                     }
                     catch (Exception e) {
-                      logger.debug("Can not send CEA", e);
+                      logger.error("Can not send CEA", e);
                       doDisconnect();
                       doEndConnection();
                     }
@@ -452,7 +452,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                   // todo buffering
                   throw new IllegalStateException("Connection is down");
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.error("Unknown event type {} in state {}", type(event), state);                          
                   return false;
               }
               return true;
@@ -475,7 +475,7 @@ public class PeerFSMImpl extends org.jdiameter.client.impl.fsm.PeerFSMImpl imple
                 case DISCONNECT_EVENT:
                   break;
                 default:
-                  logger.debug("Unknown event type {} in state {}", type(event), state);                          
+                  logger.error("Unknown event type {} in state {}", type(event), state);                          
                   return false;
               }
               return true;

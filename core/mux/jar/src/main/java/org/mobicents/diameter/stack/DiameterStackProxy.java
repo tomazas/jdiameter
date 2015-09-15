@@ -38,6 +38,7 @@ import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
 import org.jdiameter.api.Stack;
+import org.jdiameter.api.app.ConnectionStateListener;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.client.api.IAssembler;
 import org.jdiameter.client.api.IContainer;
@@ -140,5 +141,15 @@ public class DiameterStackProxy implements Stack, IContainer {
   public Dictionary getDictionary() throws IllegalDiameterStateException {
     return realStack.getDictionary();
   }
+
+	@Override
+	public void registerConnectionStateListener(ConnectionStateListener listener) {
+		realStack.registerConnectionStateListener(listener);
+	}
+
+	@Override
+	public void unregisterConnectionStateListener(ConnectionStateListener listener) {
+		realStack.unregisterConnectionStateListener(listener);
+	}
 
 }

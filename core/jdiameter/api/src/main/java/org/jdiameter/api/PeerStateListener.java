@@ -35,6 +35,6 @@ public interface PeerStateListener {
    * @param oldState old state of peer
    * @param newState new state of peer
    */
-  public void stateChanged (PeerState oldState, PeerState newState);
+  public void stateChanged (Peer peer, PeerState oldState, PeerState newState);
 
 }

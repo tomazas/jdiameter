@@ -45,6 +45,7 @@ import org.jdiameter.api.DisconnectCause;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.OverloadException;
 import org.jdiameter.api.PeerState;
+import org.jdiameter.api.app.ConnectionStateListener;
 import org.jdiameter.api.app.State;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
@@ -215,7 +216,7 @@ public class PeerFSMImpl implements IStateMachine {
               }
             }
             catch (Exception e) {
-              logger.debug("Error during processing FSM event", e);
+              logger.error("Error during processing FSM event", e);
             }
             finally {
               // PCB removed lock
@@ -431,7 +432,7 @@ public class PeerFSMImpl implements IStateMachine {
                     }
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DWR", e);
+                    logger.error("Can not send DWR", e);
                     doDisconnect();
                     setTimer(REC_TIMEOUT);
                     switchToNextState(FsmState.REOPEN);
@@ -450,7 +451,7 @@ public class PeerFSMImpl implements IStateMachine {
                     switchToNextState(FsmState.STOPPING);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DPR", e);
+                    logger.error("Can not send DPR", e);
                     doDisconnect();
                     switchToNextState(FsmState.DOWN);
                   }
@@ -465,7 +466,7 @@ public class PeerFSMImpl implements IStateMachine {
                     context.sendDpaMessage(message(event), code, null);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DPA", e);
+                    logger.error("Can not send DPA", e);
                   }
                   doDisconnect();
                   switchToNextState(FsmState.DOWN);
@@ -477,7 +478,7 @@ public class PeerFSMImpl implements IStateMachine {
                     context.sendDwaMessage(message(event), code, null);
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send DWA", e);
+                    logger.error("Can not send DWA", e);
                     doDisconnect();
                     switchToNextState(FsmState.DOWN);
                   }
@@ -491,14 +492,14 @@ public class PeerFSMImpl implements IStateMachine {
                     context.sendMessage(message(event));
                   }
                   catch (Throwable e) {
-                    logger.debug("Can not send message", e);
+                    logger.error("Can not send message", e);
                     doDisconnect();
                     setTimer(REC_TIMEOUT);
                     switchToNextState(FsmState.REOPEN);
                   }
                   break;
                 default:
-                  logger.debug("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
+                  logger.error("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
                   return false;
               }
               return true;
@@ -568,7 +569,7 @@ public class PeerFSMImpl implements IStateMachine {
                 case SEND_MSG_EVENT:
                   throw new RuntimeException("Connection is down");
                 default:
-                  logger.debug("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
+                  logger.error("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
                   return false;
               }
               return true;
@@ -596,7 +597,7 @@ public class PeerFSMImpl implements IStateMachine {
                     switchToNextState(FsmState.INITIAL);
                   }
                   catch (Throwable e) {
-                    logger.debug("Connect error", e);
+                    logger.error("Connect error", e);
                     setTimer(REC_TIMEOUT);
                     switchToNextState(FsmState.REOPEN);
                   }
@@ -607,7 +608,7 @@ public class PeerFSMImpl implements IStateMachine {
                 case DISCONNECT_EVENT:
                   break;
                 default:
-                  logger.debug("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
+                  logger.error("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
                   return false;
               }
               return true;
@@ -624,7 +625,7 @@ public class PeerFSMImpl implements IStateMachine {
                     switchToNextState(FsmState.INITIAL);
                   }
                   catch(Throwable e) {
-                    logger.debug("Can not send CER", e);
+                    logger.error("Can not send CER", e);
                     setTimer(REC_TIMEOUT);
                   }
                   break;
@@ -633,7 +634,7 @@ public class PeerFSMImpl implements IStateMachine {
                     context.connect();
                   }
                   catch (Exception e) {
-                    logger.debug("Timeout processed. Can not connect to {}", context.getPeerDescription());
+                    logger.error("Timeout processed. Can not connect to {}", context.getPeerDescription());
                     setTimer(REC_TIMEOUT);
                   }
                   break;
@@ -647,7 +648,7 @@ public class PeerFSMImpl implements IStateMachine {
                 case SEND_MSG_EVENT:
                   throw new IllegalStateException("Connection is down");
                 default:
-                  logger.debug("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
+                  logger.error("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
                   return false;
               }
               return true;
@@ -689,7 +690,7 @@ public class PeerFSMImpl implements IStateMachine {
                 case SEND_MSG_EVENT:
                   throw new RuntimeException("Connection is down");
                 default:
-                  logger.debug("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
+                  logger.error("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
                   return false;
               }
               return true;
@@ -714,7 +715,7 @@ public class PeerFSMImpl implements IStateMachine {
                   doDisconnect();
                   break;
                 default:
-                  logger.debug("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
+                  logger.error("Unknown event type: {} in state {}", event.encodeType(EventTypes.class), state);
                   return false;
               }
               return true;

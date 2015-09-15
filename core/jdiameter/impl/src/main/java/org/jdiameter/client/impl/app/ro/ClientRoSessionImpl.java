@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -77,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSession, NetworkReqListener, EventListener<Request, Answer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(ClientRoSessionImpl.class);
+  private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ClientRoSessionImpl.class);
 
   // Session State Handling ---------------------------------------------------
   protected IClientRoSessionData sessionData;
@@ -564,10 +565,10 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   public void timeoutExpired(Request request) {
-    if(request.getCommandCode()== RoCreditControlAnswer.code) {
+    if(request.getCommandCode() == RoCreditControlAnswer.code) {
       try {
         sendAndStateLock.lock();
-        handleSendFailure(null, null, request);
+        handleSendFailure(new TimeoutException("Timeout while waiting for Diameter message"), null, request);
       }
       catch (Exception e) {
         logger.debug("Failure processing timeout message for request", e);
@@ -664,9 +665,11 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
   }
 
   protected void handleSendFailure(Exception e, Event.Type eventType, Message request) throws Exception {
-    logger.debug("Failed to send message, type: {} message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
+    logger.error("Failed to send message, type: {}, message: {}, failure: {}", new Object[]{eventType, request, e != null ? e.getLocalizedMessage() : ""});
     try {
       ClientRoSessionState state = sessionData.getClientRoSessionState();
+      deliverSendError(e, request);
+      
       // Event Based ----------------------------------------------------------
       if (isEventBased()) {
         int gatheredRequestedAction = sessionData.getGatheredRequestedAction();
@@ -1159,7 +1162,20 @@ public class ClientRoSessionImpl extends AppRoSessionImpl implements ClientRoSes
       }
     }
     catch (Exception e) {
-      logger.warn("Failure delivering Ro Answer", e);
+      logger.error("Failure delivering Ro Answer", e);
+    }
+  }
+  
+  protected void deliverSendError(Exception error, Message request) {
+    try {
+      if(isValid()) {
+    	if (logger.isDebugEnabled()) {
+    		logger.debug("deliverSendError, request = {}, error = {}", request, error);
+    	}
+        listener.doSendError(this, error, request);
+      }
+    } catch (Exception e) {
+      logger.error("Failure delivering SendError Event", e);
     }
   }
 

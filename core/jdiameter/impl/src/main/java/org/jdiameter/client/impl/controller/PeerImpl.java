@@ -382,10 +382,11 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public void addPeerStateListener(final PeerStateListener listener) {
+	final Peer self = this;
     fsm.addStateChangeNotification(new AbstractStateChangeListener() {
 
       public void stateChanged(Enum oldState, Enum newState) {
-        listener.stateChanged((PeerState) oldState, (PeerState) newState);
+        listener.stateChanged(self, (PeerState) oldState, (PeerState) newState);
       }
 
       public int hashCode() {
@@ -399,11 +400,12 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   public void removePeerStateListener(final PeerStateListener listener) {
-    //FIXME: fix this... cmon
-    if (listener != null) {
+	final Peer self = this;
+	//FIXME: fix this... cmon
+	if (listener != null) {
       fsm.remStateChangeNotification(new AbstractStateChangeListener() {
         public void stateChanged(Enum oldState, Enum newState) {
-          listener.stateChanged((PeerState) oldState, (PeerState) newState);
+          listener.stateChanged(self, (PeerState) oldState, (PeerState) newState);
         }
 
         public int hashCode() {
@@ -688,7 +690,7 @@ public class PeerImpl extends AbstractPeer implements IPeer {
         }
       }
       catch (TransportException e) {
-        logger.debug("Failure establishing connection.", e);
+        logger.error("Failure establishing connection.", e);
         switch (e.getCode()) {
           case NetWorkError:
             throw new IOException("Unable to connect to " + connection.getKey() + " - " + e.getMessage());

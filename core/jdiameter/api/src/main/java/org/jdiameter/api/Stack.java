@@ -25,6 +25,7 @@ package org.jdiameter.api;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.jdiameter.api.app.ConnectionStateListener;
 import org.jdiameter.api.validation.Dictionary;
 
 /**
@@ -135,4 +136,16 @@ public interface Stack extends Wrapper {
    * @throws InternalException if stack is not configured
    */
   <T extends BaseSession> T getSession(String sessionId, Class<T> clazz) throws InternalException;
+
+  /**
+   * Register RA listener for connection events
+   * @param listener
+   */
+  void registerConnectionStateListener(ConnectionStateListener listener);
+
+  /**
+   * Unregister RA listener for connection events 
+   * @param listener
+   */
+  void unregisterConnectionStateListener(ConnectionStateListener listener);
 }

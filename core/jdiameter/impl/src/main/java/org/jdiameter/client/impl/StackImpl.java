@@ -30,6 +30,7 @@ import static org.jdiameter.common.api.concurrent.IConcurrentFactory.ScheduledEx
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -47,9 +48,11 @@ import org.jdiameter.api.Mode;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Peer;
 import org.jdiameter.api.PeerState;
+import org.jdiameter.api.PeerStateListener;
 import org.jdiameter.api.PeerTable;
 import org.jdiameter.api.RouteException;
 import org.jdiameter.api.SessionFactory;
+import org.jdiameter.api.app.ConnectionStateListener;
 import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.validation.Dictionary;
 import org.jdiameter.api.validation.ValidatorLevel;
@@ -60,6 +63,7 @@ import org.jdiameter.client.api.IMetaData;
 import org.jdiameter.client.api.StackState;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IPeerTable;
+import org.jdiameter.client.api.io.IConnectionListener;
 import org.jdiameter.client.impl.helpers.Parameters;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.data.ISessionDatasource;
@@ -490,4 +494,17 @@ public class StackImpl implements IContainer, StackImplMBean {
     }
   }
 
+  @Override
+  public void registerConnectionStateListener(ConnectionStateListener listener) {
+	for (Peer p : peerManager.getPeerTable()) {
+		p.addPeerStateListener(listener);
+    }
+  }
+  
+  @Override
+  public void unregisterConnectionStateListener(ConnectionStateListener listener) {
+	  for (Peer p : peerManager.getPeerTable()) {
+		  p.removePeerStateListener(listener);
+	  }
+  }
 }
